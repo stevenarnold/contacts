@@ -35,30 +35,35 @@ CREATE OR replace table providers360metadata AS
      SELECT uuid_string() AS pk
           , pk AS contactPK
           , lastModifiedDate AS freshness
-          , CASE
-              WHEN provider = 'vc' AND email LIKE '%villagecapital.com' THEN 1
-              WHEN provider = 'prmg' AND email LIKE '%prmg.net' THEN 1
-              WHEN provider = 'cms' AND email LIKE '%carringtonms.com' THEN 1
-              WHEN provider = 'uhm' AND email LIKE '%uhm.com' THEN 1
-              WHEN provider = 'phh' AND email LIKE '%phhmortgage.com' THEN 1
-              WHEN provider = 'lfc' AND email LIKE '%loganfinance.com' THEN 1
-              ELSE 0
-          END AS provenance
+          , CASE WHEN provider = 'vc'
+                  AND email LIKE '%villagecapital.com' THEN 1
+                 WHEN provider = 'prmg'
+                  AND email LIKE '%prmg.net' THEN 1
+                 WHEN provider = 'cms'
+                  AND email LIKE '%carringtonms.com' THEN 1
+                 WHEN provider = 'uhm'
+                  AND email LIKE '%uhm.com' THEN 1
+                 WHEN provider = 'phh'
+                  AND email LIKE '%phhmortgage.com' THEN 1
+                 WHEN provider = 'lfc'
+                  AND email LIKE '%loganfinance.com' THEN 1
+                 ELSE 0
+            END AS provenance
        FROM providers360all
 ;
 
 /* Create workspace table */
 /* ( Note name change from dart to providers from this point forward ) */
 CREATE OR REPLACE TABLE providersWork AS
-    SELECT FILENAME
+     SELECT FILENAME
           , CONTACTOWNER
           , CONTACTOWNERALIAS
           , CREATEDBY
           , CREATEDALIAS
           , LASTMODIFIEDBY
           , LASTMODIFIEDALIAS
-          , '' AS MIDDLENAME 
-          , '' AS SUFFIX 
+          , '' AS MIDDLENAME
+          , '' AS SUFFIX
           , DEPARTMENT
           , BIRTHDATE
           , LEADSOURCE
@@ -225,3 +230,19 @@ DELETE
      SELECT *
        FROM providersWork
 ;
+
+/* Join all provider tables together */
+CREATE OR replace table providers360_final AS
+     SELECT *
+       FROM providers360_1
+      UNION ALL
+     SELECT *
+       FROM providers360_2
+      UNION ALL
+     SELECT *
+       FROM providers360_3
+      UNION ALL
+     SELECT *
+       FROM providers360_4
+;
+
